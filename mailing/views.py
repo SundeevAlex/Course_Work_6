@@ -1,11 +1,12 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, CreateView, ListView
+from django.views.generic import TemplateView, CreateView, ListView, UpdateView
 from django.urls import reverse_lazy, reverse
 from mailing.models import Mailing, Client
-
+from mailing.forms import ClientForm
 
 # def index(request):
 #     return render(request, 'mailing/index.html')
+
 
 class HomeView(TemplateView):
     """
@@ -36,3 +37,23 @@ class ClientListView(ListView):
         # if not user.is_superuser and not user.groups.filter(name='manager'):
         #     queryset = queryset.filter(owner=self.request.user)
         return queryset
+
+
+class ClientCreateView(CreateView):
+    """
+    Контроллер отвечающий за создание клиента
+    """
+    model = Client
+    form_class = ClientForm
+    success_url = reverse_lazy('mailing:clients_list')
+
+
+class ClientUpdateView(UpdateView):
+    """
+    Контроллер отвечающий за редактирование клиента
+    """
+    model = Client
+    form_class = ClientForm
+    success_url = reverse_lazy('mailing:clients_list')
+    # def get_success_url(self):
+    #     return reverse('mailing:view', args=[self.kwargs.get('pk')])
