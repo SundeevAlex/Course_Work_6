@@ -1,4 +1,5 @@
 from django.db import models
+from users.models import User
 
 NULLABLE = {"null": True, "blank": True}
 
@@ -11,7 +12,7 @@ class Client(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя')
     email = models.EmailField(max_length=100, verbose_name='Электронная почта')
     comment = models.TextField(verbose_name='Комментарий', **NULLABLE)
-    # owner = models.ForeignKey(on_delete=models.SET_NULL, verbose_name='Владелец', **NULLABLE)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='Владелец', **NULLABLE)
 
     def __str__(self):
         return self.name
@@ -64,7 +65,7 @@ class Mailing(models.Model):
     end_date = models.DateTimeField(verbose_name='Дата окончания', **NULLABLE, help_text='необязательное поле')
     next_send_time = models.DateTimeField(verbose_name='Время следующей отправки', **NULLABLE)
     clients = models.ManyToManyField(Client, related_name='mailing', verbose_name='Клиенты для рассылки')
-    # owner = models.ForeignKey(verbose_name='Владелец', on_delete=models.SET_NULL, **NULLABLE)
+    owner = models.ForeignKey(User, verbose_name='Владелец', on_delete=models.SET_NULL, **NULLABLE)
 
     def __str__(self):
         return f'{self.name}, статус: {self.status}'
@@ -91,7 +92,7 @@ class Message(models.Model):
 
     title = models.CharField(max_length=255, verbose_name='Тема')
     message = models.TextField(verbose_name='Сообщение')
-    # owner = models.ForeignKey(verbose_name='Владелец', on_delete=models.SET_NULL, **NULLABLE)
+    owner = models.ForeignKey(User, verbose_name='Владелец', on_delete=models.SET_NULL, **NULLABLE)
 
     def __str__(self):
         return self.title

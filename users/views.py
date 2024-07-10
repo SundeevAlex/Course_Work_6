@@ -6,8 +6,8 @@ import secrets
 import string
 import random
 from django.core.mail import send_mail
-# from django.shortcuts import redirect, get_object_or_404, render
-# from config.settings import EMAIL_HOST_USER
+from django.shortcuts import redirect, get_object_or_404, render
+from config.settings import EMAIL_HOST_USER
 
 
 class UserCreateView(CreateView):
@@ -29,3 +29,10 @@ class UserCreateView(CreateView):
                   recipient_list=[user.email]
                   )
         return super().form_valid(form)
+
+
+def email_verification(request, token):
+    user = get_object_or_404(User, token=token)
+    user.is_active = True
+    user.save()
+    return redirect(reverse('users:login'))
