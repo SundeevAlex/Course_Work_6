@@ -4,7 +4,7 @@ from .models import Client, Mailing, Message, Log
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'comment')
+    list_display = ('name', 'email', 'comment', 'owner')
     search_fields = ('name', 'email',)
     list_filter = ('name', 'email',)
 
