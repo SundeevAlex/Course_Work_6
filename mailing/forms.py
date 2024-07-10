@@ -14,4 +14,5 @@ class StyleFormMixin:
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
-        fields = ('name', 'email', 'comment',)
+        # fields = ('all',)
+        fields = '__all__'

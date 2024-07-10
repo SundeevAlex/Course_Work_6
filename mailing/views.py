@@ -3,6 +3,7 @@ from django.views.generic import TemplateView, CreateView, ListView, UpdateView
 from django.urls import reverse_lazy, reverse
 from mailing.models import Mailing, Client
 from mailing.forms import ClientForm
+from django.core.exceptions import PermissionDenied
 
 # def index(request):
 #     return render(request, 'mailing/index.html')
@@ -47,6 +48,13 @@ class ClientCreateView(CreateView):
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients_list')
 
+    def form_valid(self, form):
+        client = form.save()
+        user = self.request.user
+        client.owner = user
+        client.save()
+        return super().form_valid(form)
+
 
 class ClientUpdateView(UpdateView):
     """
@@ -54,6 +62,7 @@ class ClientUpdateView(UpdateView):
     """
     model = Client
     form_class = ClientForm
-    success_url = reverse_lazy('mailing:clients_list')
-    # def get_success_url(self):
-    #     return reverse('mailing:view', args=[self.kwargs.get('pk')])
+
+    def get_success_url(self):
+        return reverse_lazy('mailing:clients_list')
+        # return reverse('mailing:view', args=[self.kwargs.get('pk')])
