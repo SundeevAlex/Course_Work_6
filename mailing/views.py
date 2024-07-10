@@ -1,12 +1,10 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, CreateView, ListView, UpdateView
+from django.views.generic import TemplateView, CreateView, ListView, UpdateView, DetailView, DeleteView
 from django.urls import reverse_lazy, reverse
 from mailing.models import Mailing, Client
 from mailing.forms import ClientForm
 from django.core.exceptions import PermissionDenied
-
-# def index(request):
-#     return render(request, 'mailing/index.html')
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class HomeView(TemplateView):
@@ -26,7 +24,7 @@ class HomeView(TemplateView):
         return context_data
 
 
-class ClientListView(ListView):
+class ClientListView(LoginRequiredMixin, ListView):
     """
     Контроллер отвечающий за отображение списка клиентов
     """
@@ -40,7 +38,7 @@ class ClientListView(ListView):
         return queryset
 
 
-class ClientCreateView(CreateView):
+class ClientCreateView(LoginRequiredMixin, CreateView):
     """
     Контроллер отвечающий за создание клиента
     """
@@ -56,7 +54,7 @@ class ClientCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ClientUpdateView(UpdateView):
+class ClientUpdateView(LoginRequiredMixin, UpdateView):
     """
     Контроллер отвечающий за редактирование клиента
     """
@@ -66,3 +64,30 @@ class ClientUpdateView(UpdateView):
     def get_success_url(self):
         return reverse_lazy('mailing:clients_list')
         # return reverse('mailing:view', args=[self.kwargs.get('pk')])
+
+
+class ClientDetailView(LoginRequiredMixin, DetailView):
+    """
+    Контроллер отвечающий за отображение клиента
+    """
+    model = Client
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.request.user == self.object.owner or self.request.user.is_superuser:
+            return self.object
+        raise PermissionDenied
+
+
+class ClientDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    Контроллер отвечающий за удаление клиента
+    """
+    model = Client
+    success_url = reverse_lazy('mailing:clients_list')
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.request.user == self.object.owner or self.request.user.is_superuser:
+            return self.object
+        raise PermissionDenied
