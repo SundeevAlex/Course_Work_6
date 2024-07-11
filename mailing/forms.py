@@ -1,5 +1,5 @@
 from django import forms
-from .models import Client, Message
+from .models import Client, Message, Mailing
 
 
 class StyleFormMixin:
@@ -23,3 +23,16 @@ class MessageForm(StyleFormMixin, forms.ModelForm):
         model = Message
         fields = '__all__'
         # exclude = ('owner',)
+
+
+class MailingForm(StyleFormMixin, forms.ModelForm):
+    class Meta:
+        model = Mailing
+        fields = '__all__'
+        # exclude = ('owner',)
+
+
+class ManagerMailingForm(StyleFormMixin, forms.ModelForm):
+    class Meta:
+        model = Mailing
+        fields = ('status',)

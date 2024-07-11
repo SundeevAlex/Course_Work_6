@@ -1,7 +1,8 @@
 from django.urls import path
 from mailing.apps import MailingConfig
 from mailing.views import HomeView, ClientListView, ClientCreateView, ClientUpdateView, ClientDetailView, \
-    ClientDeleteView, MessageListView, MessageDetailView, MessageUpdateView, MessageDeleteView, MessageCreateView
+    ClientDeleteView, MessageListView, MessageDetailView, MessageUpdateView, MessageDeleteView, MessageCreateView, \
+    MailingListView, MailingCreateView, MailingDetailView, MailingUpdateView, MailingDeleteView
 
 app_name = MailingConfig.name
 
@@ -18,4 +19,9 @@ urlpatterns = [
     path('message_edit/<int:pk>/', MessageUpdateView.as_view(), name='edit_message'),
     path('message_delete/<int:pk>/', MessageDeleteView.as_view(), name='delete_message'),
     path('message_create/', MessageCreateView.as_view(), name='create_message'),
+    path('mailings_list/', MailingListView.as_view(), name='mailings_list'),
+    path('mailing_create/', MailingCreateView.as_view(), name='create_mailing'),
+    path('mailing_view/<int:pk>/', MailingDetailView.as_view(), name='view_mailing'),
+    path('mailing_edit/<int:pk>/', MailingUpdateView.as_view(), name='edit_mailing'),
+    path('mailing_delete/<int:pk>/', MailingDeleteView.as_view(), name='delete_mailing'),
 ]

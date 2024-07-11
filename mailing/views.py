@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView, CreateView, ListView, UpdateView, DetailView, DeleteView
 from django.urls import reverse_lazy, reverse
 from mailing.models import Mailing, Client, Message
-from mailing.forms import ClientForm, MessageForm
+from mailing.forms import ClientForm, MessageForm, MailingForm, ManagerMailingForm
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -25,7 +25,7 @@ class HomeView(TemplateView):
 
 class ClientListView(LoginRequiredMixin, ListView):
     """
-    Контроллер отвечающий за отображение списка клиентов
+    Контроллер для отображения списка клиентов
     """
     model = Client
 
@@ -39,7 +39,7 @@ class ClientListView(LoginRequiredMixin, ListView):
 
 class ClientCreateView(LoginRequiredMixin, CreateView):
     """
-    Контроллер отвечающий за создание клиента
+    Контроллер для создания клиента
     """
     model = Client
     form_class = ClientForm
@@ -55,7 +55,7 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
     """
-    Контроллер отвечающий за редактирование клиента
+    Контроллер для редактирования клиента
     """
     model = Client
     form_class = ClientForm
@@ -66,7 +66,7 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
 
 class ClientDetailView(LoginRequiredMixin, DetailView):
     """
-    Контроллер отвечающий за отображение клиента
+    Контроллер для отображения клиента
     """
     model = Client
 
@@ -79,7 +79,7 @@ class ClientDetailView(LoginRequiredMixin, DetailView):
 
 class ClientDeleteView(LoginRequiredMixin, DeleteView):
     """
-    Контроллер отвечающий за удаление клиента
+    Контроллер для удаления клиента
     """
     model = Client
     success_url = reverse_lazy('mailing:clients_list')
@@ -151,7 +151,7 @@ class MessageDeleteView(LoginRequiredMixin, DeleteView):
 
 class MessageCreateView(LoginRequiredMixin, CreateView):
     """
-    Контроллер отвечающий за создание сообщения
+    Контроллер для создания сообщения
     """
     model = Message
     form_class = MessageForm
@@ -163,3 +163,85 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
         message.owner = user
         message.save()
         return super().form_valid(form)
+
+
+class MailingListView(LoginRequiredMixin, ListView):
+    """
+    Контроллер для отображения списка рассылок
+    """
+    model = Mailing
+
+    def get_queryset(self, queryset=None):
+        queryset = super().get_queryset()
+        user = self.request.user
+        if not user.is_superuser and not user.groups.filter(name='manager'):
+            queryset = queryset.filter(owner=self.request.user)
+        return queryset
+
+
+class MailingCreateView(LoginRequiredMixin, CreateView):
+    """
+    Контроллер для создания рассылки
+    """
+    model = Mailing
+    form_class = MailingForm
+    success_url = reverse_lazy('mailing:mailings_list')
+
+    def form_valid(self, form):
+        mailing = form.save()
+        user = self.request.user
+        mailing.owner = user
+        mailing.save()
+        return super().form_valid(form)
+
+
+class MailingDetailView(LoginRequiredMixin, DetailView):
+    """
+    Контроллер для отображения рассылки
+    """
+    model = Mailing
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        user = self.request.user
+        if not user.is_superuser and not user.groups.filter(name='manager') and user != self.object.owner:
+            raise PermissionDenied
+        else:
+            return self.object
+
+
+class MailingUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    Контроллер для редактирования рассылки
+    """
+    model = Mailing
+    form_class = MailingForm
+
+    def get_success_url(self):
+        return reverse('mailing:mailings_list')
+
+    def get_form_class(self):
+        """
+        Определение полей для редактирования в зависимости от прав пользователя
+        """
+        user = self.request.user
+        if user == self.object.owner or user.is_superuser:
+            return MailingForm
+        elif user.has_perm('mailing.deactivate_mailing'):
+            return ManagerMailingForm
+        else:
+            raise PermissionDenied
+
+
+class MailingDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    Контроллер для удаления расылки
+    """
+    model = Mailing
+    success_url = reverse_lazy('mailing:mailings_list')
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.request.user == self.object.owner or self.request.user.is_superuser:
+            return self.object
+        raise PermissionDenied
