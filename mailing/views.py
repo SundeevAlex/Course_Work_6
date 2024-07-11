@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView, CreateView, ListView, UpdateView, DetailView, DeleteView
 from django.urls import reverse_lazy, reverse
-from mailing.models import Mailing, Client, Message
+from mailing.models import Mailing, Client, Message, Log
 from mailing.forms import ClientForm, MessageForm, MailingForm, ManagerMailingForm
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -245,3 +245,10 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
         if self.request.user == self.object.owner or self.request.user.is_superuser:
             return self.object
         raise PermissionDenied
+
+
+class LogListView(LoginRequiredMixin, ListView):
+    """
+    Контроллер для отображения списка попыток рассылок
+    """
+    model = Log

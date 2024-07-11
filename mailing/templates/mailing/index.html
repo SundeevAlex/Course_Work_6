@@ -2,11 +2,11 @@
 {% block content %}
 <section class="jumbotron text-center">
     <div class="container">
-
+        {% if user.is_authenticated %}
         <a href="{% url 'mailing:clients_list' %}" class="btn btn-primary my-2">Клиенты</a>
         <a href="{% url 'mailing:messages_list' %}" class="btn btn-primary my-2">Сообщения</a>
         <a href="{% url 'mailing:mailings_list' %}" class="btn btn-primary my-2">Рассылка</a>
-        {% if user.is_authenticated %}
+        <a href="{% url 'mailing:logs_list' %}" class="btn btn-primary my-2">Попытки рассылок</a>
         <a href="{% url 'users:logout' %}" class="btn btn-primary my-2">Выход</a>
         {% else %}
         <a href="{% url 'users:login' %}" class="btn btn-primary my-2">Вход</a>
@@ -22,16 +22,16 @@
 <div class="album py-5 bg-light">
     <div class="container">
         <div class="row">
-<div class="col-6">
-            <div class="card" style="width: 36rem;">
-                <div class="card-header"><h5>Статистика рассылок</h5></div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Всего рассылок - {{all_mailings}}</li>
-                    <li class="list-group-item">Активных рассылок - {{active_mailings}}</li>
-                    <li class="list-group-item">Уникальных клиентов для рассылок - {{active_clients}}</li>
-                </ul>
+            <div class="col-6">
+                <div class="card" style="width: 36rem;">
+                    <div class="card-header"><h5>Статистика рассылок</h5></div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Всего рассылок - {{all_mailings}}</li>
+                        <li class="list-group-item">Активных рассылок - {{active_mailings}}</li>
+                        <li class="list-group-item">Уникальных клиентов для рассылок - {{active_clients}}</li>
+                    </ul>
+                </div>
             </div>
-        </div>
         </div>
     </div>
 </div>
