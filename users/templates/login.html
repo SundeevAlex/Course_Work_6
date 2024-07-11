@@ -12,7 +12,7 @@
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit" class="btn btn-success">Войти</button>
-                    <a href="" class="btn btn-warning">
+                    <a href="{% url 'users:reset_password' %}" class="btn btn-warning">
                         Восстановить пароль
                     </a>
 
