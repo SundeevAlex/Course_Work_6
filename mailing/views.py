@@ -4,6 +4,7 @@ from mailing.models import Mailing, Client, Message, Log
 from mailing.forms import ClientForm, MessageForm, MailingForm, ManagerMailingForm
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
+from blog.services import get_articles_from_cache
 
 
 class HomeView(TemplateView):
@@ -19,6 +20,7 @@ class HomeView(TemplateView):
         context_data['all_mailings'] = mailings.count()
         context_data['active_mailings'] = mailings.filter(status=Mailing.STARTED).count()
         context_data['active_clients'] = clients.values('email').distinct().count()
+        context_data['random_blogs'] = get_articles_from_cache().order_by('?')[:3]
 
         return context_data
 
@@ -32,8 +34,8 @@ class ClientListView(LoginRequiredMixin, ListView):
     def get_queryset(self, queryset=None):
         queryset = super().get_queryset()
         user = self.request.user
-        # if not user.is_superuser and not user.groups.filter(name='manager'):
-        #     queryset = queryset.filter(owner=self.request.user)
+        if not user.is_superuser and not user.groups.filter(name='manager'):
+            queryset = queryset.filter(owner=self.request.user)
         return queryset
 
 
@@ -62,6 +64,12 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('mailing:clients_list')
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.request.user == self.object.owner or self.request.user.is_superuser:
+            return self.object
+        raise PermissionDenied
 
 
 class ClientDetailView(LoginRequiredMixin, DetailView):
@@ -227,7 +235,7 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
         user = self.request.user
         if user == self.object.owner or user.is_superuser:
             return MailingForm
-        elif user.has_perm('mailing.deactivate_mailing'):
+        elif user.has_perm('mailing.deactivate_mailing') or user.has_perm('mailing.can_change'):
             return ManagerMailingForm
         else:
             raise PermissionDenied

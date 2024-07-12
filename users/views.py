@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.shortcuts import redirect, get_object_or_404, render
 from config.settings import EMAIL_HOST_USER
 from django.views.generic import CreateView
+from django.contrib.auth.decorators import permission_required
 
 
 class UserCreateView(CreateView):
@@ -61,3 +62,14 @@ def reset_password(request):
         )
         return render(request, 'users/reset_password.html', context)
     return render(request, 'users/reset_password.html')
+
+
+@permission_required('users.deactivate_user')
+def toggle_activity(request, pk):
+    user = User.objects.get(pk=pk)
+    if user.is_active:
+        user.is_active = False
+    else:
+        user.is_active = True
+    user.save()
+    return redirect(reverse('users:users_list'))
