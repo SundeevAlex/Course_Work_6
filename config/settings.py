@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'mailing',
     'users',
     'blog',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -126,3 +127,6 @@ if CACHE_ENABLED:
             'LOCATION': os.getenv('CACHE_LOCATION'),
         }
     }
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
