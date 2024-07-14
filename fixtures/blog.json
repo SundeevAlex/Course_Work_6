@@ -1,0 +1,54 @@
+[
+  {
+    "model": "blog.blogarticle",
+    "pk": 1,
+    "fields": {
+      "title": "Check",
+      "slug": "dfgh",
+      "body": "It was so late...",
+      "preview": "img/photo/icecreeam.jpg",
+      "created_at": "2024-07-11T10:52:06.722Z",
+      "is_published": true,
+      "views_count": 0
+    }
+  },
+  {
+    "model": "blog.blogarticle",
+    "pk": 2,
+    "fields": {
+      "title": "Number 2",
+      "slug": null,
+      "body": "There is...",
+      "preview": "img/photo/milk.jpg",
+      "created_at": "2024-07-11T10:55:28.338Z",
+      "is_published": true,
+      "views_count": 0
+    }
+  },
+  {
+    "model": "blog.blogarticle",
+    "pk": 3,
+    "fields": {
+      "title": "3 article",
+      "slug": null,
+      "body": "Nobody never...",
+      "preview": "",
+      "created_at": "2024-07-11T10:56:01.128Z",
+      "is_published": true,
+      "views_count": 0
+    }
+  },
+  {
+    "model": "blog.blogarticle",
+    "pk": 4,
+    "fields": {
+      "title": "The 4",
+      "slug": null,
+      "body": "This summer....",
+      "preview": "",
+      "created_at": "2024-07-11T10:58:09.884Z",
+      "is_published": true,
+      "views_count": 0
+    }
+  }
+]
