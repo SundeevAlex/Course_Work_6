@@ -23,6 +23,23 @@ class Client(models.Model):
         ordering = ('name',)
 
 
+class Message(models.Model):
+    """
+    Модель сообщения для рассылки
+    """
+
+    title = models.CharField(max_length=255, verbose_name='Тема')
+    message = models.TextField(verbose_name='Сообщение')
+    owner = models.ForeignKey(User, verbose_name='Владелец', on_delete=models.SET_NULL, **NULLABLE)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Сообщение'
+        verbose_name_plural = 'Сообщения'
+
+
 class Mailing(models.Model):
     """
     Модель рассылки
@@ -65,6 +82,7 @@ class Mailing(models.Model):
     end_date = models.DateTimeField(verbose_name='Дата окончания', **NULLABLE, help_text='необязательное поле')
     next_send_time = models.DateTimeField(verbose_name='Время следующей отправки', **NULLABLE)
     clients = models.ManyToManyField(Client, related_name='mailing', verbose_name='Клиенты для рассылки')
+    message = models.ForeignKey(Message, verbose_name='Cообщение', on_delete=models.CASCADE, **NULLABLE)
     owner = models.ForeignKey(User, verbose_name='Владелец', on_delete=models.SET_NULL, **NULLABLE)
 
     def __str__(self):
@@ -83,23 +101,6 @@ class Mailing(models.Model):
             ('deactivate_mailing', 'Can deactivate mailing'),
             ('view_all_mailings', 'Can view all mailings'),
         ]
-
-
-class Message(models.Model):
-    """
-    Модель сообщения для рассылки
-    """
-
-    title = models.CharField(max_length=255, verbose_name='Тема')
-    message = models.TextField(verbose_name='Сообщение')
-    owner = models.ForeignKey(User, verbose_name='Владелец', on_delete=models.SET_NULL, **NULLABLE)
-
-    def __str__(self):
-        return self.title
-
-    class Meta:
-        verbose_name = 'Сообщение'
-        verbose_name_plural = 'Сообщения'
 
 
 class Log(models.Model):
