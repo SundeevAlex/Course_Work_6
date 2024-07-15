@@ -130,3 +130,5 @@ if CACHE_ENABLED:
 
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+
+RUN_MAIN = os.getenv('RUN_MAIN') == 'True'
